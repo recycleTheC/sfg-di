@@ -2,52 +2,55 @@ package guru.springframework.sfgdi.config;
 
 import com.springframework.pets.PetService;
 import com.springframework.pets.PetServiceFactory;
+import guru.springframework.sfgdi.datasource.FakeDataSource;
 import guru.springframework.sfgdi.repositories.EnglishGreetingRepository;
 import guru.springframework.sfgdi.repositories.EnglishGreetingRepositoryImpl;
 import guru.springframework.sfgdi.services.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
 @Configuration
 @ImportResource("classpath:sfgdi-config.xml")
+@PropertySource("classpath:datasource.properties")
 public class GreetingServiceConfig {
 
     @Bean
-    PetServiceFactory petServiceFactory(){
+    PetServiceFactory petServiceFactory() {
         return new PetServiceFactory();
     }
 
     @Bean
     @Profile({"dog", "default"})
-    PetService dogPetService(PetServiceFactory petServiceFactory){
+    PetService dogPetService(PetServiceFactory petServiceFactory) {
         return petServiceFactory.getPetService("dog");
     }
 
     @Bean
     @Profile({"cat"})
-    PetService catPetService(PetServiceFactory petServiceFactory){
+    PetService catPetService(PetServiceFactory petServiceFactory) {
         return petServiceFactory.getPetService("cat");
     }
 
     @Profile({"ES", "default"})
     @Bean("i18nService")
-    I18NSpanishService i18NSpanishService(){
+    I18NSpanishService i18NSpanishService() {
         return new I18NSpanishService();
     }
 
     @Bean
-    EnglishGreetingRepository englishGreetingRepository(){
+    EnglishGreetingRepository englishGreetingRepository() {
         return new EnglishGreetingRepositoryImpl();
     }
 
     @Profile("EN")
     @Bean
-    I18nEnglishGreetingService i18nService(EnglishGreetingRepository englishGreetingRepository){
+    I18nEnglishGreetingService i18nService(EnglishGreetingRepository englishGreetingRepository) {
         return new I18nEnglishGreetingService(englishGreetingRepository);
     }
 
     @Primary
     @Bean
-    PrimaryGreetingService primaryGreetingService(){
+    PrimaryGreetingService primaryGreetingService() {
         return new PrimaryGreetingService();
     }
 
@@ -57,12 +60,25 @@ public class GreetingServiceConfig {
     }*/
 
     @Bean
-    PropertyInjectedGreetingService propertyInjectedGreetingService(){
+    PropertyInjectedGreetingService propertyInjectedGreetingService() {
         return new PropertyInjectedGreetingService();
     }
 
     @Bean
-    SetterInjectedGreetingService setterInjectedGreetingService(){
+    SetterInjectedGreetingService setterInjectedGreetingService() {
         return new SetterInjectedGreetingService();
+    }
+
+    @Bean
+    FakeDataSource fakeDataSource(@Value("${guru.username}") String username,
+                                  @Value("${guru.password}") String password,
+                                  @Value("${guru.jdbcUrl}") String jdbcUrl) {
+        FakeDataSource fakeDataSource = new FakeDataSource();
+
+        fakeDataSource.setUsername(username);
+        fakeDataSource.setPassword(password);
+        fakeDataSource.setJdbcUrl(jdbcUrl);
+
+        return fakeDataSource;
     }
 }
