@@ -6,11 +6,12 @@ import guru.springframework.sfgdi.datasource.FakeDataSource;
 import guru.springframework.sfgdi.repositories.EnglishGreetingRepository;
 import guru.springframework.sfgdi.repositories.EnglishGreetingRepositoryImpl;
 import guru.springframework.sfgdi.services.*;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.*;
 
 @Configuration
 @ImportResource("classpath:sfgdi-config.xml")
+@EnableConfigurationProperties(SfgConstructorConfig.class)
 public class GreetingServiceConfig {
 
     @Bean
@@ -69,7 +70,7 @@ public class GreetingServiceConfig {
     }
 
     @Bean
-    FakeDataSource fakeDataSource(SfgConfiguration sfgConfiguration) {
+    FakeDataSource fakeDataSource(SfgConstructorConfig sfgConfiguration) {
         FakeDataSource fakeDataSource = new FakeDataSource();
 
         fakeDataSource.setUsername(sfgConfiguration.getUsername());
